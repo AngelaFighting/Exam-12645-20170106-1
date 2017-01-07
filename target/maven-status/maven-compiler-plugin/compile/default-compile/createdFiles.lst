@@ -1,0 +1,15 @@
+dao\FilmMapper.class
+model\Language.class
+service\impl\FilmServiceImpl.class
+service\LanguageService.class
+model\Film.class
+controller\FilmController.class
+controller\CustomerController.class
+service\impl\LanguageServiceImpl.class
+dao\LanguageMapper.class
+service\impl\CustomerServiceImpl.class
+controller\LanguageController.class
+service\CustomerService.class
+dao\CustomerMapper.class
+model\Customer.class
+service\FilmService.class

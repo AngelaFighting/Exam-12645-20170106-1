@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>电影列表</title>
+		<!-- Bootstrap 核心 CSS 文件 -->
+		<link href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<!-- jQuery文件务必在bootstrap.min.js 之前引入 -->
+		<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script> 
+		<!-- Bootstrap 核心 JavaScript 文件 -->
+		<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link href="css/public.css" rel="stylesheet">
+	</head>
+	<body>		
+		<div class="container"style="margin-top:20px;">
+			<div id="delete_info"></div>
+			<div class="header">
+		        <span class="col-sm-3">共有
+		        	<b id="totalNum"></b>条记录
+		        </span>
+		        <div class="col-sm-3">
+		        	跳转到第
+			        <select id="pageNum" name="pageNum">
+		            </select>
+		        	页
+		        </div>
+		        <div class="col-sm-4">
+		        	每页显示记录数
+			        <select id="pageSize" name="pageSize">
+		                <option value="10">10</option>
+		                <option value="20">20</option>
+		                <option value="50">50</option>
+		            </select>
+		        </div>	
+		        <div class="col-sm-2"><a href="film_form">
+		        	<button class="btn btn-success pull-right">新增</button>
+		        </a></div>
+	    	</div>			
+			<table id="film_table" class="table table-striped">
+				<caption>电影列表</caption>
+				<thead>
+					<tr>
+						<th>序号</th>
+						<th>标题</th>
+						<th>语言</th>
+						<th>描述</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+			<nav class="text-center">
+		        <ul class="pagination">
+		        </ul>	
+			</nav>    
+		</div>	
+	</body>
+	<script src="js/film.js"></script>
+	<script type="text/javascript">
+	
+	//定义全局变量
+	var totalNum=0;//总记录数
+	var pageSize=10;//每页显示的记录数
+	var totalPageNum=1;//总页数
+	var currentPageNum=1;//当前页数
+	var offset=0;//偏移量
+	
+	//初始化
+	$(document).ready(function(){
+		initAll();
+	});	
+	
+	function initAll(){
+		//获取总记录数
+		queryFilmNum();			
+		//计算页数
+		totalPageNum=totalNum%pageSize==0?(totalNum/pageSize):Math.ceil(totalNum/pageSize);
+		if(currentPageNum>totalPageNum){
+			//如果删除最后一页的最后一条数据，则当前页应变为新的最后一页，即原先的上一页
+			currentPageNum=totalPageNum;
+		}
+		//设置跳转列表
+		changePageList(totalPageNum,currentPageNum);
+		//分页查询
+		offset=(currentPageNum-1)*pageSize;//计算偏移量
+		queryFilm(offset,pageSize);		
+		//设置分页列表
+		changePagination(currentPageNum,totalPageNum,pageSize);
+	}
+	
+	//更新显示数
+	$("#pageSize").change(function(){
+		//获取显示数
+		pageSize=Number($("#pageSize option:selected").val());
+		//计算页数
+		totalPageNum=totalNum%pageSize==0?(totalNum/pageSize):Math.ceil(totalNum/pageSize);		
+		offset=0;//偏移量
+		currentPageNum=1;//当前页数
+		//更新页数
+		changePageList(totalPageNum,currentPageNum);
+		//更新查询
+		queryFilm(offset,pageSize);	
+		//设置分页列表
+		changePagination(currentPageNum,totalPageNum);
+	});
+	
+	//更改列表内容
+	$("#pageNum").change(function(){
+		//获取被选中的页码
+		currentPageNum=Number($("#pageNum option:selected").val());
+		offset=(currentPageNum-1)*pageSize;//计算偏移量
+		queryFilm(offset,pageSize);//更新查询内容
+		//设置分页列表
+		changePagination(currentPageNum,totalPageNum);
+	});
+	
+	//修改当前页并修改查询内容和分页列表
+	function changeCurrentPageNum(param){
+		//取消之前被选择的页码
+		$("#pageNum option:selected").attr("selected",false);
+		currentPageNum=param;//修改当前页数值
+		offset=(currentPageNum-1)*pageSize;//计算偏移量
+		queryFilm(offset,pageSize);//更新查询内容
+		//设置分页列表
+		changePagination(currentPageNum,totalPageNum);
+		//更新页数选中项
+		$("#pageNum option[value='"+currentPageNum+"']").attr("selected",true);
+	}
+	
+	//查询记录总数
+	function queryFilmNum(){
+		$.ajax({
+			type:"get",
+			url:"film/count",
+			async:false,
+			dataType:"json",
+			success:function(data){
+				totalNum=data;
+			}
+		});
+		$("#totalNum").text(totalNum);
+	}
+	
+
+	/**
+	 * 删除film
+	 * @param param film_id
+	 */
+	function deleteFilm(param){
+		if(confirm("亲，确定要删除吗？")){
+			$.ajax({
+				type:"delete",
+				url:"film/delete/"+param,
+				async:false,
+				dataType:"json",
+	   			success:function(data){
+	   				if(data==1)
+	   					$("#delete_info").html(
+						"<div class='alert alert-success'>删除成功</div>");
+	   				else
+	   					$("#delete_info").html(
+						"<div class='alert alert-danger'>删除失败</div>");				
+	   				$("div.alert").delay(3000).slideUp(300);
+	   			}
+			});
+		}
+		initAll();//更新内容
+	}
+	
+	</script>
+</html>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+                           http://www.springframework.org/schema/aop
+                           http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+                           http://www.springframework.org/schema/mvc
+                           http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd 
+                           http://www.springframework.org/schema/context 
+                           http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- 配置自动扫描的包 -->
+    <context:component-scan base-package="controller"/>
+    <mvc:default-servlet-handler/>  
+    
+    <!-- 配置可以直接访问的页面 -->
+    <mvc:view-controller path="/index" view-name="/login.html"/>
+    <mvc:view-controller path="/film" view-name="/list.html"/>
+    <mvc:view-controller path="/film_form" view-name="/film.html"/>
+    
+    <mvc:resources mapping="/js/**" location="/js/"/> 
+    <mvc:resources mapping="/css/**" location="/css/"/> 
+    
+    <mvc:annotation-driven>
+        <mvc:message-converters register-defaults="true">
+            <!--json处理-->
+            <bean class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+                <property name="supportedMediaTypes">
+                    <list>
+                        <value>application/json;charset=UTF-8</value>
+                        <value>text/html;charset=UTF-8</value>
+                    </list>
+                </property>
+            </bean>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+</beans>

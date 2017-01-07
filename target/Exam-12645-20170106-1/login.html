@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+	<head>		
+		<meta charset="UTF-8">
+		<title>首页</title>		
+		<!-- Bootstrap 核心 CSS 文件 -->
+		<link href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+		<!-- jQuery文件务必在bootstrap.min.js 之前引入 -->
+		<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script> 
+		<!-- Bootstrap 核心 JavaScript 文件 -->
+		<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<link href="css/public.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="container">
+			<h1 class="title">欢迎来到电影租赁系统</h1>
+			<h2 class="login_titile">登录有惊喜</h2>
+			<div class="form-inline" id="login_form">
+				<form class="form-group">
+			    	<label class="control-label" for="name">用户名</label>&nbsp;&nbsp;
+			      	<input type="text" class="form-control" name="name" id="name"
+			      		placeholder="请输入用户名" value="" required>&nbsp;&nbsp;
+			      	<button type="submit" class="btn btn-success">Let's go</button>
+			  	</form>	
+			</div>
+			<div id="login_info"></div>
+		</div>
+	</body>
+	<script type="text/javascript">
+	$("#login_form").submit(function(){
+		//判断是否输入为全部空格
+		if($("#name").val().replace(/(^s*)|(s*$)/g, "").trim()==""){
+			$("#login_info").html("<div class='alert alert-danger'>用户名不能为空</div>");
+			$("div.alert").delay(3000).slideUp(300);
+		}else{
+	   		$.ajax({
+	   			type:"get",
+				url:"customer/login?name="+$("#name").val(),
+				async:false,//同步
+				dataType:"json",
+				success:function(data){
+					if(!data){//登录失败
+						$("#login_info").html("<div class='alert alert-danger'>用户名输入错误</div>");
+						$("div.alert").delay(3000).slideUp(300);
+		    		}else{
+		    			location.href="film";
+		    		}
+				}
+	   		});  	   		
+		}
+		return false;
+	});
+	</script>
+</html>
